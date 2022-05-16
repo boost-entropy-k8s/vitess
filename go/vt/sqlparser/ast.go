@@ -128,11 +128,12 @@ type (
 	// AlgorithmValue is the algorithm specified in the alter table command
 	AlgorithmValue string
 
-	// AlterColumn is used to add or drop defaults to columns in alter table command
+	// AlterColumn is used to add or drop defaults & visibility to columns in alter table command
 	AlterColumn struct {
 		Column      *ColName
 		DropDefault bool
 		DefaultVal  Expr
+		Invisible   *bool
 	}
 
 	// With contains the lists of common table expression and specifies if it is recursive or not
@@ -172,6 +173,12 @@ type (
 	AlterCheck struct {
 		Name     ColIdent
 		Enforced bool
+	}
+
+	// AlterIndex represents the `ALTER INDEX` part in an `ALTER TABLE ALTER INDEX` command.
+	AlterIndex struct {
+		Name      ColIdent
+		Invisible bool
 	}
 
 	// KeyState is used to disable or enable the keys in an alter table statement
@@ -456,6 +463,11 @@ type (
 		Comments *ParsedComments
 	}
 
+	// ShowThrottledApps represents a SHOW VITESS_THROTTLED_APPS statement
+	ShowThrottledApps struct {
+		Comments Comments
+	}
+
 	// RevertMigration represents a REVERT VITESS_MIGRATION statement
 	RevertMigration struct {
 		UUID     string
@@ -467,8 +479,10 @@ type (
 
 	// AlterMigration represents a ALTER VITESS_MIGRATION statement
 	AlterMigration struct {
-		Type AlterMigrationType
-		UUID string
+		Type   AlterMigrationType
+		UUID   string
+		Expire string
+		Ratio  *Literal
 	}
 
 	// AlterTable represents a ALTER TABLE statement.
@@ -699,6 +713,7 @@ func (*AlterVschema) iStatement()      {}
 func (*AlterMigration) iStatement()    {}
 func (*RevertMigration) iStatement()   {}
 func (*ShowMigrationLogs) iStatement() {}
+func (*ShowThrottledApps) iStatement() {}
 func (*DropTable) iStatement()         {}
 func (*DropView) iStatement()          {}
 func (*TruncateTable) iStatement()     {}
@@ -725,6 +740,7 @@ func (*AddColumns) iAlterOption()              {}
 func (AlgorithmValue) iAlterOption()           {}
 func (*AlterColumn) iAlterOption()             {}
 func (*AlterCheck) iAlterOption()              {}
+func (*AlterIndex) iAlterOption()              {}
 func (*ChangeColumn) iAlterOption()            {}
 func (*ModifyColumn) iAlterOption()            {}
 func (*AlterCharset) iAlterOption()            {}
@@ -1625,7 +1641,28 @@ type PartitionDefinition struct {
 }
 
 type PartitionDefinitionOptions struct {
-	ValueRange     *PartitionValueRange
+	ValueRange              *PartitionValueRange
+	Comment                 *Literal
+	Engine                  *PartitionEngine
+	DataDirectory           *Literal
+	IndexDirectory          *Literal
+	MaxRows                 *int
+	MinRows                 *int
+	TableSpace              string
+	SubPartitionDefinitions SubPartitionDefinitions
+}
+
+// Subpartition Definition Corresponds to the subpartition_definition option of partition_definition
+type SubPartitionDefinition struct {
+	Name    ColIdent
+	Options *SubPartitionDefinitionOptions
+}
+
+// This is a list of SubPartitionDefinition
+type SubPartitionDefinitions []*SubPartitionDefinition
+
+// Different options/attributes that can be provided to a subpartition_definition.
+type SubPartitionDefinitionOptions struct {
 	Comment        *Literal
 	Engine         *PartitionEngine
 	DataDirectory  *Literal

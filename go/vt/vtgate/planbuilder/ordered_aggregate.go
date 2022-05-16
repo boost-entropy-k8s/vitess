@@ -285,12 +285,6 @@ func (oa *orderedAggregate) pushAggr(pb *primitiveBuilder, expr *sqlparser.Alias
 		}
 		oa.extraDistinct = col
 		oa.preProcess = true
-		var alias string
-		if expr.As.IsEmpty() {
-			alias = sqlparser.String(expr.Expr)
-		} else {
-			alias = expr.As.String()
-		}
 		switch opcode {
 		case engine.AggregateCount:
 			opcode = engine.AggregateCountDistinct
@@ -300,7 +294,7 @@ func (oa *orderedAggregate) pushAggr(pb *primitiveBuilder, expr *sqlparser.Alias
 		oa.aggregates = append(oa.aggregates, &engine.AggregateParams{
 			Opcode: opcode,
 			Col:    innerCol,
-			Alias:  alias,
+			Alias:  expr.ColumnName(),
 		})
 	} else {
 		newBuilder, _, innerCol, err := planProjection(pb, oa.input, expr, origin)
@@ -392,4 +386,21 @@ func (oa *orderedAggregate) OutputColumns() []sqlparser.SelectExpr {
 // SetTruncateColumnCount sets the truncate column count.
 func (oa *orderedAggregate) SetTruncateColumnCount(count int) {
 	oa.truncateColumnCount = count
+}
+
+// rewriteAggrExpressions is used when our predicate expression contains aggregation.
+// In these cases, we need to rewrite it, so it uses the column output from the ordered aggregate
+func (oa *orderedAggregate) rewriteAggrExpressions() func(*sqlparser.Cursor) bool {
+	return func(cursor *sqlparser.Cursor) bool {
+		sqlNode := cursor.Node()
+		if sqlparser.IsAggregation(sqlNode) {
+			fExp := sqlNode.(*sqlparser.FuncExpr)
+			for _, aggregate := range oa.aggregates {
+				if sqlparser.EqualsExpr(aggregate.Expr, fExp) {
+					cursor.Replace(sqlparser.Offset(aggregate.Col))
+				}
+			}
+		}
+		return true
+	}
 }

@@ -57,6 +57,8 @@ import {
     ValidateSchemaKeyspaceParams,
     ValidateVersionKeyspaceParams,
     validateVersionKeyspace,
+    fetchShardReplicationPositions,
+    createKeyspace,
 } from '../api/http';
 import { vtadmin as pb } from '../proto/vtadmin';
 import { formatAlias } from '../util/tablets';
@@ -96,6 +98,18 @@ export const useKeyspace = (
         },
         ...options,
     });
+};
+
+/**
+ * useCreateKeyspace is a mutation query hook that creates a keyspace.
+ */
+export const useCreateKeyspace = (
+    params: Parameters<typeof createKeyspace>[0],
+    options: UseMutationOptions<Awaited<ReturnType<typeof createKeyspace>>, Error>
+) => {
+    return useMutation<Awaited<ReturnType<typeof createKeyspace>>, Error>(() => {
+        return createKeyspace(params);
+    }, options);
 };
 
 /**
@@ -187,6 +201,15 @@ export const useSetReadWrite = (
         return setReadWrite(params);
     }, options);
 };
+
+/**
+ * useShardReplicationPositions is a query hook that shows the replication status
+ * of each replica machine in the shard graph.
+ */
+export const useShardReplicationPositions = (
+    params: Parameters<typeof fetchShardReplicationPositions>[0],
+    options?: UseQueryOptions<pb.GetShardReplicationPositionsResponse, Error> | undefined
+) => useQuery(['shard_replication_positions', params], () => fetchShardReplicationPositions(params), options);
 
 /**
  * useStartReplication starts replication on the specified tablet.

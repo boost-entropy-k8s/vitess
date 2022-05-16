@@ -45,6 +45,8 @@ func CloneSQLNode(in SQLNode) SQLNode {
 		return CloneRefOfAlterColumn(in)
 	case *AlterDatabase:
 		return CloneRefOfAlterDatabase(in)
+	case *AlterIndex:
+		return CloneRefOfAlterIndex(in)
 	case *AlterMigration:
 		return CloneRefOfAlterMigration(in)
 	case *AlterTable:
@@ -339,12 +341,20 @@ func CloneSQLNode(in SQLNode) SQLNode {
 		return CloneRefOfShowMigrationLogs(in)
 	case *ShowOther:
 		return CloneRefOfShowOther(in)
+	case *ShowThrottledApps:
+		return CloneRefOfShowThrottledApps(in)
 	case *StarExpr:
 		return CloneRefOfStarExpr(in)
 	case *Stream:
 		return CloneRefOfStream(in)
 	case *SubPartition:
 		return CloneRefOfSubPartition(in)
+	case *SubPartitionDefinition:
+		return CloneRefOfSubPartitionDefinition(in)
+	case *SubPartitionDefinitionOptions:
+		return CloneRefOfSubPartitionDefinitionOptions(in)
+	case SubPartitionDefinitions:
+		return CloneSubPartitionDefinitions(in)
 	case *Subquery:
 		return CloneRefOfSubquery(in)
 	case *SubstrExpr:
@@ -496,6 +506,7 @@ func CloneRefOfAlterColumn(n *AlterColumn) *AlterColumn {
 	out := *n
 	out.Column = CloneRefOfColName(n.Column)
 	out.DefaultVal = CloneExpr(n.DefaultVal)
+	out.Invisible = CloneRefOfBool(n.Invisible)
 	return &out
 }
 
@@ -510,12 +521,23 @@ func CloneRefOfAlterDatabase(n *AlterDatabase) *AlterDatabase {
 	return &out
 }
 
+// CloneRefOfAlterIndex creates a deep clone of the input.
+func CloneRefOfAlterIndex(n *AlterIndex) *AlterIndex {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	out.Name = CloneColIdent(n.Name)
+	return &out
+}
+
 // CloneRefOfAlterMigration creates a deep clone of the input.
 func CloneRefOfAlterMigration(n *AlterMigration) *AlterMigration {
 	if n == nil {
 		return nil
 	}
 	out := *n
+	out.Ratio = CloneRefOfLiteral(n.Ratio)
 	return &out
 }
 
@@ -1715,6 +1737,7 @@ func CloneRefOfPartitionDefinitionOptions(n *PartitionDefinitionOptions) *Partit
 	out.IndexDirectory = CloneRefOfLiteral(n.IndexDirectory)
 	out.MaxRows = CloneRefOfInt(n.MaxRows)
 	out.MinRows = CloneRefOfInt(n.MinRows)
+	out.SubPartitionDefinitions = CloneSubPartitionDefinitions(n.SubPartitionDefinitions)
 	return &out
 }
 
@@ -2031,6 +2054,16 @@ func CloneRefOfShowOther(n *ShowOther) *ShowOther {
 	return &out
 }
 
+// CloneRefOfShowThrottledApps creates a deep clone of the input.
+func CloneRefOfShowThrottledApps(n *ShowThrottledApps) *ShowThrottledApps {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	out.Comments = CloneComments(n.Comments)
+	return &out
+}
+
 // CloneRefOfStarExpr creates a deep clone of the input.
 func CloneRefOfStarExpr(n *StarExpr) *StarExpr {
 	if n == nil {
@@ -2062,6 +2095,44 @@ func CloneRefOfSubPartition(n *SubPartition) *SubPartition {
 	out.ColList = CloneColumns(n.ColList)
 	out.Expr = CloneExpr(n.Expr)
 	return &out
+}
+
+// CloneRefOfSubPartitionDefinition creates a deep clone of the input.
+func CloneRefOfSubPartitionDefinition(n *SubPartitionDefinition) *SubPartitionDefinition {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	out.Name = CloneColIdent(n.Name)
+	out.Options = CloneRefOfSubPartitionDefinitionOptions(n.Options)
+	return &out
+}
+
+// CloneRefOfSubPartitionDefinitionOptions creates a deep clone of the input.
+func CloneRefOfSubPartitionDefinitionOptions(n *SubPartitionDefinitionOptions) *SubPartitionDefinitionOptions {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	out.Comment = CloneRefOfLiteral(n.Comment)
+	out.Engine = CloneRefOfPartitionEngine(n.Engine)
+	out.DataDirectory = CloneRefOfLiteral(n.DataDirectory)
+	out.IndexDirectory = CloneRefOfLiteral(n.IndexDirectory)
+	out.MaxRows = CloneRefOfInt(n.MaxRows)
+	out.MinRows = CloneRefOfInt(n.MinRows)
+	return &out
+}
+
+// CloneSubPartitionDefinitions creates a deep clone of the input.
+func CloneSubPartitionDefinitions(n SubPartitionDefinitions) SubPartitionDefinitions {
+	if n == nil {
+		return nil
+	}
+	res := make(SubPartitionDefinitions, 0, len(n))
+	for _, x := range n {
+		res = append(res, CloneRefOfSubPartitionDefinition(x))
+	}
+	return res
 }
 
 // CloneRefOfSubquery creates a deep clone of the input.
@@ -2417,6 +2488,8 @@ func CloneAlterOption(in AlterOption) AlterOption {
 		return CloneRefOfAlterCheck(in)
 	case *AlterColumn:
 		return CloneRefOfAlterColumn(in)
+	case *AlterIndex:
+		return CloneRefOfAlterIndex(in)
 	case *ChangeColumn:
 		return CloneRefOfChangeColumn(in)
 	case *DropColumn:
@@ -3061,6 +3134,8 @@ func CloneStatement(in Statement) Statement {
 		return CloneRefOfShow(in)
 	case *ShowMigrationLogs:
 		return CloneRefOfShowMigrationLogs(in)
+	case *ShowThrottledApps:
+		return CloneRefOfShowThrottledApps(in)
 	case *Stream:
 		return CloneRefOfStream(in)
 	case *TruncateTable:
@@ -3111,6 +3186,15 @@ func CloneSliceOfRefOfColumnDefinition(n []*ColumnDefinition) []*ColumnDefinitio
 		res = append(res, CloneRefOfColumnDefinition(x))
 	}
 	return res
+}
+
+// CloneRefOfBool creates a deep clone of the input.
+func CloneRefOfBool(n *bool) *bool {
+	if n == nil {
+		return nil
+	}
+	out := *n
+	return &out
 }
 
 // CloneSliceOfDatabaseOption creates a deep clone of the input.
@@ -3374,15 +3458,6 @@ func CloneRefOfRootNode(n *RootNode) *RootNode {
 	}
 	out := *n
 	out.SQLNode = CloneSQLNode(n.SQLNode)
-	return &out
-}
-
-// CloneRefOfBool creates a deep clone of the input.
-func CloneRefOfBool(n *bool) *bool {
-	if n == nil {
-		return nil
-	}
-	out := *n
 	return &out
 }
 

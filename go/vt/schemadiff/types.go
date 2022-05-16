@@ -87,6 +87,8 @@ type EntityDiff interface {
 	CanonicalStatementString() string
 	// SubsequentDiff returns a followup diff to this one, if exists
 	SubsequentDiff() EntityDiff
+	// SetSubsequentDiff updates the existing subsequent diff to the given one
+	SetSubsequentDiff(EntityDiff)
 }
 
 const (
@@ -97,7 +99,7 @@ const (
 
 const (
 	RangeRotationFullSpec = iota
-	RangeRotationStatements
+	RangeRotationDistinctStatements
 	RangeRotationIgnore
 )
 

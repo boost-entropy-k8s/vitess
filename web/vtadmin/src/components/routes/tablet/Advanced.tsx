@@ -1,6 +1,23 @@
+/**
+ * Copyright 2022 The Vitess Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React from 'react';
 import { UseMutationResult } from 'react-query';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { DeleteTabletParams } from '../../../api/http';
 import {
     useDeleteTablet,
     useReparentTablet,
@@ -9,36 +26,36 @@ import {
     useStartReplication,
     useStopReplication,
 } from '../../../hooks/api';
-import { vtadmin } from '../../../proto/vtadmin';
+import { topodata, vtadmin } from '../../../proto/vtadmin';
 import { isPrimary } from '../../../util/tablets';
+import DangerAction from '../../DangerAction';
 import { Icon, Icons } from '../../Icon';
 import { success, warn } from '../../Snackbar';
-import DangerAction from './DangerAction';
 
 interface AdvancedProps {
+    alias: string;
+    clusterID: string;
     tablet: vtadmin.Tablet | undefined;
 }
 
-interface RouteParams {
-    alias: string;
-    clusterID: string;
-}
-
-const Advanced: React.FC<AdvancedProps> = ({ tablet }) => {
-    const { clusterID, alias } = useParams<RouteParams>();
+const Advanced: React.FC<AdvancedProps> = ({ alias, clusterID, tablet }) => {
     const history = useHistory();
     const primary = isPrimary(tablet);
 
-    const deleteTabletMutation = useDeleteTablet(
-        { alias, clusterID },
-        {
-            onSuccess: () => {
-                success(`Successfully deleted tablet ${alias}`);
-                history.push('/tablets');
-            },
-            onError: (error) => warn(`There was an error deleting tablet: ${error}`),
-        }
-    );
+    const deleteParams: DeleteTabletParams = { alias, clusterID };
+    if (tablet?.tablet?.type === topodata.TabletType.PRIMARY) {
+        deleteParams.allowPrimary = true;
+    }
+
+    const deleteTabletMutation = useDeleteTablet(deleteParams, {
+        onSuccess: () => {
+            success(
+                `Initiated deletion for tablet ${alias}. It may take some time for the tablet to disappear from the topology.`
+            );
+            history.push('/tablets');
+        },
+        onError: (error) => warn(`There was an error deleting tablet: ${error}`),
+    });
 
     const reparentTabletMutation = useReparentTablet(
         { alias, clusterID },
@@ -220,9 +237,9 @@ const Advanced: React.FC<AdvancedProps> = ({ tablet }) => {
                                     </div>
                                 }
                                 description={
-                                    <div>
+                                    <>
                                         Set tablet <span className="font-bold">{alias}</span> to read-only.
-                                    </div>
+                                    </>
                                 }
                                 action="set tablet to read-only"
                                 mutation={setReadOnlyMutation as UseMutationResult}
@@ -241,9 +258,9 @@ const Advanced: React.FC<AdvancedProps> = ({ tablet }) => {
                                     </div>
                                 }
                                 description={
-                                    <div>
+                                    <>
                                         Set tablet <span className="font-bold">{alias}</span> to read-write.
-                                    </div>
+                                    </>
                                 }
                                 action="set tablet to read-only"
                                 mutation={setReadWriteMutation as UseMutationResult}
@@ -261,15 +278,15 @@ const Advanced: React.FC<AdvancedProps> = ({ tablet }) => {
                         primaryDescription={
                             <div>
                                 Tablet {alias} is the primary tablet. Flag{' '}
-                                <span className="font-mono bg-red-100 p-1 text-sm">-allow_master=true</span> will be
+                                <span className="font-mono bg-red-100 p-1 text-sm">-allow_primary=true</span> will be
                                 applied in order to delete the primary tablet.
                             </div>
                         }
                         description={
-                            <div>
+                            <>
                                 Delete tablet <span className="font-bold">{alias}</span>. Doing so will remove it from
                                 the topology, but vttablet and MySQL won't be touched.
-                            </div>
+                            </>
                         }
                         action="delete the tablet"
                         mutation={deleteTabletMutation as UseMutationResult}

@@ -1291,6 +1291,16 @@ func (m *DeleteTabletRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
+	if m.AllowPrimary {
+		i--
+		if m.AllowPrimary {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x18
+	}
 	if len(m.ClusterIds) > 0 {
 		for iNdEx := len(m.ClusterIds) - 1; iNdEx >= 0; iNdEx-- {
 			i -= len(m.ClusterIds[iNdEx])
@@ -1300,10 +1310,13 @@ func (m *DeleteTabletRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2517,10 +2530,13 @@ func (m *GetTabletRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3063,10 +3079,13 @@ func (m *PingTabletRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3152,10 +3171,13 @@ func (m *RefreshStateRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3241,10 +3263,13 @@ func (m *ReparentTabletRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3281,10 +3306,13 @@ func (m *ReparentTabletResponse) MarshalToSizedBufferVT(dAtA []byte) (int, error
 		i -= len(m.unknownFields)
 		copy(dAtA[i:], m.unknownFields)
 	}
-	if len(m.Primary) > 0 {
-		i -= len(m.Primary)
-		copy(dAtA[i:], m.Primary)
-		i = encodeVarint(dAtA, i, uint64(len(m.Primary)))
+	if m.Primary != nil {
+		size, err := m.Primary.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -3344,10 +3372,13 @@ func (m *RunHealthCheckRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error)
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3433,10 +3464,13 @@ func (m *SetReadOnlyRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3515,10 +3549,13 @@ func (m *SetReadWriteRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3597,10 +3634,13 @@ func (m *StartReplicationRequest) MarshalToSizedBufferVT(dAtA []byte) (int, erro
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -3686,10 +3726,13 @@ func (m *StopReplicationRequest) MarshalToSizedBufferVT(dAtA []byte) (int, error
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.Alias) > 0 {
-		i -= len(m.Alias)
-		copy(dAtA[i:], m.Alias)
-		i = encodeVarint(dAtA, i, uint64(len(m.Alias)))
+	if m.Alias != nil {
+		size, err := m.Alias.MarshalToSizedBufferVT(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarint(dAtA, i, uint64(size))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -4521,8 +4564,8 @@ func (m *DeleteTabletRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -4530,6 +4573,9 @@ func (m *DeleteTabletRequest) SizeVT() (n int) {
 			l = len(s)
 			n += 1 + l + sov(uint64(l))
 		}
+	}
+	if m.AllowPrimary {
+		n += 2
 	}
 	if m.unknownFields != nil {
 		n += len(m.unknownFields)
@@ -5036,8 +5082,8 @@ func (m *GetTabletRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5271,8 +5317,8 @@ func (m *PingTabletRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5309,8 +5355,8 @@ func (m *RefreshStateRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5347,8 +5393,8 @@ func (m *ReparentTabletRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5377,8 +5423,8 @@ func (m *ReparentTabletResponse) SizeVT() (n int) {
 	if l > 0 {
 		n += 1 + l + sov(uint64(l))
 	}
-	l = len(m.Primary)
-	if l > 0 {
+	if m.Primary != nil {
+		l = m.Primary.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if m.unknownFields != nil {
@@ -5393,8 +5439,8 @@ func (m *RunHealthCheckRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5431,8 +5477,8 @@ func (m *SetReadOnlyRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5465,8 +5511,8 @@ func (m *SetReadWriteRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5499,8 +5545,8 @@ func (m *StartReplicationRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -5537,8 +5583,8 @@ func (m *StopReplicationRequest) SizeVT() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.Alias)
-	if l > 0 {
+	if m.Alias != nil {
+		l = m.Alias.SizeVT()
 		n += 1 + l + sov(uint64(l))
 	}
 	if len(m.ClusterIds) > 0 {
@@ -9065,7 +9111,7 @@ func (m *DeleteTabletRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -9075,23 +9121,27 @@ func (m *DeleteTabletRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -9125,6 +9175,26 @@ func (m *DeleteTabletRequest) UnmarshalVT(dAtA []byte) error {
 			}
 			m.ClusterIds = append(m.ClusterIds, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowPrimary", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.AllowPrimary = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skip(dAtA[iNdEx:])
@@ -11682,7 +11752,7 @@ func (m *GetTabletRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -11692,23 +11762,27 @@ func (m *GetTabletRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -12930,7 +13004,7 @@ func (m *PingTabletRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -12940,23 +13014,27 @@ func (m *PingTabletRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -13128,7 +13206,7 @@ func (m *RefreshStateRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13138,23 +13216,27 @@ func (m *RefreshStateRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -13326,7 +13408,7 @@ func (m *ReparentTabletRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13336,23 +13418,27 @@ func (m *ReparentTabletRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -13505,7 +13591,7 @@ func (m *ReparentTabletResponse) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Primary", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13515,23 +13601,27 @@ func (m *ReparentTabletResponse) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Primary = string(dAtA[iNdEx:postIndex])
+			if m.Primary == nil {
+				m.Primary = &topodata.TabletAlias{}
+			}
+			if err := m.Primary.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -13588,7 +13678,7 @@ func (m *RunHealthCheckRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13598,23 +13688,27 @@ func (m *RunHealthCheckRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -13786,7 +13880,7 @@ func (m *SetReadOnlyRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13796,23 +13890,27 @@ func (m *SetReadOnlyRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -13952,7 +14050,7 @@ func (m *SetReadWriteRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -13962,23 +14060,27 @@ func (m *SetReadWriteRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -14118,7 +14220,7 @@ func (m *StartReplicationRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -14128,23 +14230,27 @@ func (m *StartReplicationRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -14316,7 +14422,7 @@ func (m *StopReplicationRequest) UnmarshalVT(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Alias", wireType)
 			}
-			var stringLen uint64
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflow
@@ -14326,23 +14432,27 @@ func (m *StopReplicationRequest) UnmarshalVT(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLength
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + msglen
 			if postIndex < 0 {
 				return ErrInvalidLength
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Alias = string(dAtA[iNdEx:postIndex])
+			if m.Alias == nil {
+				m.Alias = &topodata.TabletAlias{}
+			}
+			if err := m.Alias.UnmarshalVT(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {

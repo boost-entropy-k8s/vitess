@@ -2932,10 +2932,13 @@ export namespace vtadmin {
     interface IDeleteTabletRequest {
 
         /** DeleteTabletRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** DeleteTabletRequest cluster_ids */
         cluster_ids?: (string[]|null);
+
+        /** DeleteTabletRequest allow_primary */
+        allow_primary?: (boolean|null);
     }
 
     /** Represents a DeleteTabletRequest. */
@@ -2948,10 +2951,13 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IDeleteTabletRequest);
 
         /** DeleteTabletRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** DeleteTabletRequest cluster_ids. */
         public cluster_ids: string[];
+
+        /** DeleteTabletRequest allow_primary. */
+        public allow_primary: boolean;
 
         /**
          * Creates a new DeleteTabletRequest instance using the specified properties.
@@ -5284,7 +5290,7 @@ export namespace vtadmin {
     interface IGetTabletRequest {
 
         /** GetTabletRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** GetTabletRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -5300,7 +5306,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IGetTabletRequest);
 
         /** GetTabletRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** GetTabletRequest cluster_ids. */
         public cluster_ids: string[];
@@ -6322,7 +6328,7 @@ export namespace vtadmin {
     interface IPingTabletRequest {
 
         /** PingTabletRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** PingTabletRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -6338,7 +6344,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IPingTabletRequest);
 
         /** PingTabletRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** PingTabletRequest cluster_ids. */
         public cluster_ids: string[];
@@ -6508,7 +6514,7 @@ export namespace vtadmin {
     interface IRefreshStateRequest {
 
         /** RefreshStateRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** RefreshStateRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -6524,7 +6530,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IRefreshStateRequest);
 
         /** RefreshStateRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** RefreshStateRequest cluster_ids. */
         public cluster_ids: string[];
@@ -6694,7 +6700,7 @@ export namespace vtadmin {
     interface IReparentTabletRequest {
 
         /** ReparentTabletRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** ReparentTabletRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -6710,7 +6716,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IReparentTabletRequest);
 
         /** ReparentTabletRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** ReparentTabletRequest cluster_ids. */
         public cluster_ids: string[];
@@ -6796,7 +6802,7 @@ export namespace vtadmin {
         shard?: (string|null);
 
         /** ReparentTabletResponse primary */
-        primary?: (string|null);
+        primary?: (topodata.ITabletAlias|null);
     }
 
     /** Represents a ReparentTabletResponse. */
@@ -6815,7 +6821,7 @@ export namespace vtadmin {
         public shard: string;
 
         /** ReparentTabletResponse primary. */
-        public primary: string;
+        public primary?: (topodata.ITabletAlias|null);
 
         /**
          * Creates a new ReparentTabletResponse instance using the specified properties.
@@ -6892,7 +6898,7 @@ export namespace vtadmin {
     interface IRunHealthCheckRequest {
 
         /** RunHealthCheckRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** RunHealthCheckRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -6908,7 +6914,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IRunHealthCheckRequest);
 
         /** RunHealthCheckRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** RunHealthCheckRequest cluster_ids. */
         public cluster_ids: string[];
@@ -7078,7 +7084,7 @@ export namespace vtadmin {
     interface ISetReadOnlyRequest {
 
         /** SetReadOnlyRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** SetReadOnlyRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -7094,7 +7100,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.ISetReadOnlyRequest);
 
         /** SetReadOnlyRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** SetReadOnlyRequest cluster_ids. */
         public cluster_ids: string[];
@@ -7258,7 +7264,7 @@ export namespace vtadmin {
     interface ISetReadWriteRequest {
 
         /** SetReadWriteRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** SetReadWriteRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -7274,7 +7280,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.ISetReadWriteRequest);
 
         /** SetReadWriteRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** SetReadWriteRequest cluster_ids. */
         public cluster_ids: string[];
@@ -7438,7 +7444,7 @@ export namespace vtadmin {
     interface IStartReplicationRequest {
 
         /** StartReplicationRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** StartReplicationRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -7454,7 +7460,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IStartReplicationRequest);
 
         /** StartReplicationRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** StartReplicationRequest cluster_ids. */
         public cluster_ids: string[];
@@ -7624,7 +7630,7 @@ export namespace vtadmin {
     interface IStopReplicationRequest {
 
         /** StopReplicationRequest alias */
-        alias?: (string|null);
+        alias?: (topodata.ITabletAlias|null);
 
         /** StopReplicationRequest cluster_ids */
         cluster_ids?: (string[]|null);
@@ -7640,7 +7646,7 @@ export namespace vtadmin {
         constructor(properties?: vtadmin.IStopReplicationRequest);
 
         /** StopReplicationRequest alias. */
-        public alias: string;
+        public alias?: (topodata.ITabletAlias|null);
 
         /** StopReplicationRequest cluster_ids. */
         public cluster_ids: string[];
