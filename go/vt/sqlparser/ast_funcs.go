@@ -627,7 +627,7 @@ func NewColNameWithQualifier(identifier string, table TableName) *ColName {
 }
 
 // NewSelect is used to create a select statement
-func NewSelect(comments Comments, exprs SelectExprs, selectOptions []string, into *SelectInto, from TableExprs, where *Where, groupBy GroupBy, having *Where) *Select {
+func NewSelect(comments Comments, exprs SelectExprs, selectOptions []string, into *SelectInto, from TableExprs, where *Where, groupBy GroupBy, having *Where, windows NamedWindows) *Select {
 	var cache *bool
 	var distinct, straightJoinHint, sqlFoundRows bool
 
@@ -659,6 +659,7 @@ func NewSelect(comments Comments, exprs SelectExprs, selectOptions []string, int
 		Where:            where,
 		GroupBy:          groupBy,
 		Having:           having,
+		Windows:          windows,
 	}
 }
 
@@ -668,6 +669,10 @@ func NewColIdentWithAt(str string, at AtCount) ColIdent {
 		val: str,
 		at:  at,
 	}
+}
+
+func NewOffset(v int, original Expr) *Offset {
+	return &Offset{V: v, Original: String(original)}
 }
 
 // IsEmpty returns true if the name is empty.
@@ -1356,6 +1361,102 @@ func (ty TrimType) ToString() string {
 }
 
 // ToString returns the type as a string
+func (ty FrameUnitType) ToString() string {
+	switch ty {
+	case FrameRowsType:
+		return FrameRowsStr
+	case FrameRangeType:
+		return FrameRangeStr
+	default:
+		return "Unknown FrameUnitType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty FramePointType) ToString() string {
+	switch ty {
+	case CurrentRowType:
+		return CurrentRowStr
+	case UnboundedPrecedingType:
+		return UnboundedPrecedingStr
+	case UnboundedFollowingType:
+		return UnboundedFollowingStr
+	case ExprPrecedingType:
+		return ExprPrecedingStr
+	case ExprFollowingType:
+		return ExprFollowingStr
+	default:
+		return "Unknown FramePointType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty ArgumentLessWindowExprType) ToString() string {
+	switch ty {
+	case CumeDistExprType:
+		return CumeDistExprStr
+	case DenseRankExprType:
+		return DenseRankExprStr
+	case PercentRankExprType:
+		return PercentRankExprStr
+	case RankExprType:
+		return RankExprStr
+	case RowNumberExprType:
+		return RowNumberExprStr
+	default:
+		return "Unknown ArgumentLessWindowExprType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty NullTreatmentType) ToString() string {
+	switch ty {
+	case RespectNullsType:
+		return RespectNullsStr
+	case IgnoreNullsType:
+		return IgnoreNullsStr
+	default:
+		return "Unknown NullTreatmentType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty FromFirstLastType) ToString() string {
+	switch ty {
+	case FromFirstType:
+		return FromFirstStr
+	case FromLastType:
+		return FromLastStr
+	default:
+		return "Unknown FromFirstLastType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty FirstOrLastValueExprType) ToString() string {
+	switch ty {
+	case FirstValueExprType:
+		return FirstValueExprStr
+	case LastValueExprType:
+		return LastValueExprStr
+	default:
+		return "Unknown FirstOrLastValueExprType"
+	}
+}
+
+// ToString returns the type as a string
+func (ty LagLeadExprType) ToString() string {
+	switch ty {
+	case LagExprType:
+		return LagExprStr
+	case LeadExprType:
+		return LeadExprStr
+	default:
+		return "Unknown LagLeadExprType"
+	}
+}
+
+// ToString returns the type as a string
 func (ty JSONAttributeType) ToString() string {
 	switch ty {
 	case DepthAttributeType:
@@ -1824,6 +1925,16 @@ func (ae *AliasedExpr) ColumnName() string {
 	}
 
 	return String(ae.Expr)
+}
+
+// AllAggregation returns true if all the expressions contain aggregation
+func (s SelectExprs) AllAggregation() bool {
+	for _, k := range s {
+		if !ContainsAggregation(k) {
+			return false
+		}
+	}
+	return true
 }
 
 func isExprLiteral(expr Expr) bool {

@@ -251,6 +251,7 @@ type (
 		With        *With
 		GroupBy     GroupBy
 		Having      *Where
+		Windows     NamedWindows
 		OrderBy     OrderBy
 		Limit       *Limit
 		Lock        Lock
@@ -2077,6 +2078,83 @@ type TrimFuncType int8
 // TrimType is an enum to get types of Trim
 type TrimType int8
 
+// Types for window functions
+type (
+
+	// WindowSpecification represents window_spec
+	// More information available here: https://dev.mysql.com/doc/refman/8.0/en/window-functions-usage.html
+	WindowSpecification struct {
+		Name            ColIdent
+		PartitionClause Exprs
+		OrderClause     OrderBy
+		FrameClause     *FrameClause
+	}
+
+	WindowDefinition struct {
+		Name       ColIdent
+		WindowSpec *WindowSpecification
+	}
+
+	WindowDefinitions []*WindowDefinition
+
+	NamedWindow struct {
+		Windows WindowDefinitions
+	}
+
+	NamedWindows []*NamedWindow
+
+	// FrameClause represents frame_clause
+	// More information available here: https://dev.mysql.com/doc/refman/8.0/en/window-functions-frames.html
+	FrameClause struct {
+		Unit  FrameUnitType
+		Start *FramePoint
+		End   *FramePoint
+	}
+
+	// FramePoint refers to frame_start/frame_end
+	// More information available here: https://dev.mysql.com/doc/refman/8.0/en/window-functions-frames.html
+	FramePoint struct {
+		Type FramePointType
+		Expr Expr
+	}
+
+	// OverClause refers to over_clause
+	// More information available here: https://dev.mysql.com/doc/refman/8.0/en/window-functions-usage.html
+	OverClause struct {
+		WindowName ColIdent
+		WindowSpec *WindowSpecification
+	}
+
+	// FrameUnitType is an enum to get types of Unit used in FrameClause.
+	FrameUnitType int8
+
+	// FrameUnitType is an enum to get types of FramePoint.
+	FramePointType int8
+
+	// NullTreatmentClause refers to null_treatment
+	// According to SQL Docs:  Some window functions permit a null_treatment clause that specifies how to handle NULL values when calculating results.
+	// This clause is optional. It is part of the SQL standard, but the MySQL implementation permits only RESPECT NULLS (which is also the default).
+	// This means that NULL values are considered when calculating results. IGNORE NULLS is parsed, but produces an error.
+	NullTreatmentClause struct {
+		Type NullTreatmentType
+	}
+
+	// NullTreatmentType is an enum to get types for NullTreatmentClause
+	NullTreatmentType int8
+
+	// FromFirstLastClause refers to from_first_last
+	// According to SQL Docs:  from_first_last is part of the SQL standard, but the MySQL implementation permits only FROM FIRST (which is also the default).
+	// This means that calculations begin at the first row of the window.
+	// FROM LAST is parsed, but produces an error.
+	// To obtain the same effect as FROM LAST (begin calculations at the last row of the window), use ORDER BY to sort in reverse order.
+	FromFirstLastClause struct {
+		Type FromFirstLastType
+	}
+
+	// FromFirstLastType is an enum to get types for FromFirstLastClause
+	FromFirstLastType int8
+)
+
 // *********** Expressions
 type (
 	// Expr represents an expression.
@@ -2275,8 +2353,9 @@ type (
 	// ConvertExpr represents a call to CONVERT(expr, type)
 	// or it's equivalent CAST(expr AS type). Both are rewritten to the former.
 	ConvertExpr struct {
-		Expr Expr
-		Type *ConvertType
+		Expr  Expr
+		Type  *ConvertType
+		Array bool
 	}
 
 	// ConvertUsingExpr represents a call to CONVERT(expr USING charset).
@@ -2353,8 +2432,12 @@ type (
 		JSONVal Expr
 	}
 
-	// Offset is another AST type that is used during planning and never produced by the parser
-	Offset int
+	// Offset is an AST type that is used during planning and never produced by the parser
+	// it is the column offset from the incoming result stream
+	Offset struct {
+		V        int
+		Original string
+	}
 
 	// JSONArrayExpr represents JSON_ARRAY()
 	// More information on https://dev.mysql.com/doc/refman/8.0/en/json-creation-functions.html#function_json-array
@@ -2556,6 +2639,95 @@ type (
 	JSONUnquoteExpr struct {
 		JSONValue Expr
 	}
+
+	// RegexpInstrExpr represents REGEXP_INSTR()
+	// For more information, visit https://dev.mysql.com/doc/refman/8.0/en/regexp.html#function_regexp-instr
+	RegexpInstrExpr struct {
+		Expr         Expr
+		Pattern      Expr
+		Position     Expr
+		Occurrence   Expr
+		ReturnOption Expr
+		MatchType    Expr
+	}
+
+	// RegexpLikeExpr represents REGEXP_LIKE()
+	// For more information, visit https://dev.mysql.com/doc/refman/8.0/en/regexp.html#function_regexp-like
+	RegexpLikeExpr struct {
+		Expr      Expr
+		Pattern   Expr
+		MatchType Expr
+	}
+
+	// RegexpReplaceExpr represents REGEXP_REPLACE()
+	// For more information, visit https://dev.mysql.com/doc/refman/8.0/en/regexp.html#function_regexp-replace
+	RegexpReplaceExpr struct {
+		Expr       Expr
+		Pattern    Expr
+		Repl       Expr
+		Occurrence Expr
+		Position   Expr
+		MatchType  Expr
+	}
+
+	// RegexpSubstrExpr represents REGEXP_SUBSTR()
+	// For more information, visit https://dev.mysql.com/doc/refman/8.0/en/regexp.html#function_regexp-substr
+	RegexpSubstrExpr struct {
+		Expr       Expr
+		Pattern    Expr
+		Occurrence Expr
+		Position   Expr
+		MatchType  Expr
+	}
+
+	// ArgumentLessWindowExpr stands for the following window_functions: CUME_DIST, DENSE_RANK, PERCENT_RANK, RANK, ROW_NUMBER
+	// These functions do not take any argument.
+	ArgumentLessWindowExpr struct {
+		Type       ArgumentLessWindowExprType
+		OverClause *OverClause
+	}
+
+	// ArgumentLessWindowExprType is an enum to get types of ArgumentLessWindowExpr.
+	ArgumentLessWindowExprType int8
+
+	// FirstOrLastValueExpr stands for the following window_functions: FIRST_VALUE, LAST_VALUE
+	FirstOrLastValueExpr struct {
+		Type                FirstOrLastValueExprType
+		Expr                Expr
+		NullTreatmentClause *NullTreatmentClause
+		OverClause          *OverClause
+	}
+
+	// FirstOrLastValueExprType is an enum to get types of FirstOrLastValueExpr.
+	FirstOrLastValueExprType int8
+
+	// NtileExpr stands for the NTILE()
+	NtileExpr struct {
+		N          Expr
+		OverClause *OverClause
+	}
+
+	// NTHValueExpr stands for the NTH_VALUE()
+	NTHValueExpr struct {
+		Expr                Expr
+		N                   Expr
+		OverClause          *OverClause
+		FromFirstLastClause *FromFirstLastClause
+		NullTreatmentClause *NullTreatmentClause
+	}
+
+	// LagLeadExpr stand for the following: LAG, LEAD
+	LagLeadExpr struct {
+		Type                LagLeadExprType
+		Expr                Expr
+		N                   Expr
+		Default             Expr
+		OverClause          *OverClause
+		NullTreatmentClause *NullTreatmentClause
+	}
+
+	// LagLeadExprType is an enum to get types of LagLeadExpr.
+	LagLeadExprType int8
 )
 
 // iExpr ensures that only expressions nodes can be assigned to a Expr
@@ -2597,7 +2769,7 @@ func (*ExtractedSubquery) iExpr()                  {}
 func (*TrimFuncExpr) iExpr()                       {}
 func (*JSONSchemaValidFuncExpr) iExpr()            {}
 func (*JSONSchemaValidationReportFuncExpr) iExpr() {}
-func (Offset) iExpr()                              {}
+func (*Offset) iExpr()                             {}
 func (*JSONPrettyExpr) iExpr()                     {}
 func (*JSONStorageFreeExpr) iExpr()                {}
 func (*JSONStorageSizeExpr) iExpr()                {}
@@ -2617,6 +2789,16 @@ func (*JSONValueMergeExpr) iExpr()                 {}
 func (*JSONRemoveExpr) iExpr()                     {}
 func (*JSONUnquoteExpr) iExpr()                    {}
 func (*MemberOfExpr) iExpr()                       {}
+func (*RegexpInstrExpr) iExpr()                    {}
+func (*RegexpLikeExpr) iExpr()                     {}
+func (*RegexpReplaceExpr) iExpr()                  {}
+func (*RegexpSubstrExpr) iExpr()                   {}
+func (*ArgumentLessWindowExpr) iExpr()             {}
+func (*FirstOrLastValueExpr) iExpr()               {}
+func (*NtileExpr) iExpr()                          {}
+func (*NTHValueExpr) iExpr()                       {}
+func (*LagLeadExpr) iExpr()                        {}
+func (*NamedWindow) iExpr()                        {}
 
 // iCallable marks all expressions that represent function calls
 func (*FuncExpr) iCallable()                           {}
@@ -2652,6 +2834,16 @@ func (*JSONValueMergeExpr) iCallable()                 {}
 func (*JSONRemoveExpr) iCallable()                     {}
 func (*JSONUnquoteExpr) iCallable()                    {}
 func (*MemberOfExpr) iCallable()                       {}
+func (*RegexpInstrExpr) iCallable()                    {}
+func (*RegexpLikeExpr) iCallable()                     {}
+func (*RegexpReplaceExpr) iCallable()                  {}
+func (*RegexpSubstrExpr) iCallable()                   {}
+func (*ArgumentLessWindowExpr) iCallable()             {}
+func (*FirstOrLastValueExpr) iCallable()               {}
+func (*NtileExpr) iCallable()                          {}
+func (*NTHValueExpr) iCallable()                       {}
+func (*LagLeadExpr) iCallable()                        {}
+func (*NamedWindow) iCallable()                        {}
 
 // Exprs represents a list of value expressions.
 // It's not a valid expression because it's not parenthesized.
