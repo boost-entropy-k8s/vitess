@@ -25,7 +25,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"vitess.io/vitess/go/vt/discovery"
@@ -137,9 +136,8 @@ type (
 		spCount        int
 
 		// time simulator
-		batchTime         *sync2.Batcher
-		globalTabletEnv   *tabletEnv
-		globalTabletEnvMu sync.Mutex
+		batchTime       *sync2.Batcher
+		globalTabletEnv *tabletEnv
 	}
 )
 
@@ -392,7 +390,7 @@ func (vte *VTExplain) specialHandlingOfSavepoints(q *MysqlQuery) error {
 		vte.spMap[sp.Name.String()] = spName
 		vte.spCount++
 	}
-	sp.Name = sqlparser.NewColIdent(spName)
+	sp.Name = sqlparser.NewIdentifierCI(spName)
 	q.SQL = sqlparser.String(sp)
 
 	return nil

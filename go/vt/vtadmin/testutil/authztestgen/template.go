@@ -38,23 +38,33 @@ package {{ .Package }}
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"vitess.io/vitess/go/vt/topo/topoproto"
 	"vitess.io/vitess/go/vt/vtadmin"
+	"vitess.io/vitess/go/vt/vtadmin/cluster"
 	"vitess.io/vitess/go/vt/vtadmin/rbac"
 	"vitess.io/vitess/go/vt/vtadmin/testutil"
 	"vitess.io/vitess/go/vt/vtadmin/vtctldclient/fakevtctldclient"
 
+	logutilpb "vitess.io/vitess/go/vt/proto/logutil"
+	mysqlctlpb "vitess.io/vitess/go/vt/proto/mysqlctl"
+	tabletmanagerdatapb "vitess.io/vitess/go/vt/proto/tabletmanagerdata"
 	topodatapb "vitess.io/vitess/go/vt/proto/topodata"
+	vschemapb "vitess.io/vitess/go/vt/proto/vschema"
 	vtadminpb "vitess.io/vitess/go/vt/proto/vtadmin"
 	vtctldatapb "vitess.io/vitess/go/vt/proto/vtctldata"
 )
 
 {{ range .Tests }}
 func Test{{ .Method }}(t *testing.T) {
+	t.Parallel()
+
 	opts := vtadmin.Options{
 		RBAC: &rbac.Config{
 			Rules: []*struct{
@@ -77,38 +87,17 @@ func Test{{ .Method }}(t *testing.T) {
 	err := opts.RBAC.Reify()
 	require.NoError(t, err, "failed to reify authorization rules: %+v", opts.RBAC.Rules)
 
-	api := vtadmin.NewAPI(
-		testutil.BuildClusters(t, testutil.TestClusterConfig{
-			Cluster: &vtadminpb.Cluster{
-				Id:   "test",
-				Name: "test",
-			},
-			VtctldClient: newVtctldClient(),
-			Tablets: []*vtadminpb.Tablet{
-				{{ range $.DBTablets -}}
-				{
-					Tablet: &topodatapb.Tablet{
-						Alias: &topodatapb.TabletAlias{
-							Cell: "{{ .Tablet.Alias.Cell }}",
-							Uid: {{ .Tablet.Alias.Uid }},
-						},
-					},
-				},
-				{{- end }}
-			},
-		}),
-		opts,
-	)
-
+	api := vtadmin.NewAPI(testClusters(t), opts)
 	t.Cleanup(func() {
 		if err := api.Close(); err != nil {
 			t.Logf("api did not close cleanly: %s", err.Error())
 		}
 	})
+
 	{{ with $test := . -}}
 	{{ range .Cases }}
 	t.Run("{{ .Name }}", func(t *testing.T) {
-		t.Parallel()
+		{{- if not $test.SerializeCases -}}t.Parallel(){{- end }}
 		{{ getActor .Actor }}
 
 		ctx := context.Background()
@@ -129,15 +118,56 @@ func Test{{ .Method }}(t *testing.T) {
 	{{ end }}
 	{{- end -}}
 }
-{{- end }}
+{{ end }}
 
-func newVtctldClient() *fakevtctldclient.VtctldClient {
-	return &fakevtctldclient.VtctldClient{
-		{{- range .FakeVtctldClientResults }}
-		{{ .FieldName }}: {{ .Type }}{
-			{{ .Value }}
+func testClusters(t testing.TB) []*cluster.Cluster {
+	configs := []testutil.TestClusterConfig{
+		{{ range .Clusters -}}
+		{{- with $cluster := . -}}
+		{
+			Cluster: &vtadminpb.Cluster{
+				Id:   "{{ .ID }}",
+				Name: "{{ .Name }}",
+			},
+			VtctldClient: &fakevtctldclient.VtctldClient{
+				{{- range .FakeVtctldClientResults }}
+				{{ .FieldName }}: {{ .Type }}{
+					{{ .Value }}
+				},
+				{{- end }}
+			},
+			Tablets: []*vtadminpb.Tablet{
+				{{- range .DBTablets }}
+				{
+					Cluster: &vtadminpb.Cluster{Id: "{{ $cluster.ID }}", Name: "{{ $cluster.Name }}" },
+					Tablet: &topodatapb.Tablet{
+						Alias: &topodatapb.TabletAlias{
+							Cell: "{{ .Tablet.Alias.Cell }}",
+							Uid: {{ .Tablet.Alias.Uid }},
+						},
+						Keyspace: "{{ .Tablet.Keyspace }}",
+						Type: topodatapb.TabletType_{{ .Tablet.Type }},
+					},
+					State: vtadminpb.Tablet_{{ .State }},
+				},
+				{{- end }}
+			},
+			Config: &cluster.Config{
+				TopoReadPoolConfig: &cluster.RPCPoolConfig{
+					Size: 100,
+					WaitTimeout: time.Millisecond * 50,
+				},
+			},
 		},
+		{{- end -}}
 		{{- end }}
 	}
+
+	return testutil.BuildClusters(t, configs...)
 }
+`
+
+const _doct = `{{ range .Methods -}}
+{{ formatDocRow . }}
+{{ end -}}
 `
